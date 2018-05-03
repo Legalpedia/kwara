@@ -1,0 +1,212 @@
+{%  load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>        
+        <!-- META SECTION -->
+        <title>Payment | {{ data.sitename }}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <!-- END META SECTION -->
+        
+        <!-- CSS INCLUDE -->        
+        <link rel="stylesheet" type="text/css" id="theme" href="../static/css/theme-default.css"/>
+         <link rel="stylesheet" type="text/css"  href="../static/js/themes/default/style.min.css"/>
+           <link rel="stylesheet" href="../static/vendor/bootstrap-table/bootstrap-table.css">
+        <link rel="stylesheet" href="{%  static "css/jstree.style.min.css"  %}"/>
+
+        <!-- EOF CSS INCLUDE -->                                      
+    </head>
+    <body>
+        <!-- START PAGE CONTAINER -->
+        <div class="page-container page-navigation-top">            
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+                
+                          {% include "portal_navbar.html" %}       
+                
+                <!-- START BREADCRUMB -->
+                <ul class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Payment</a></li>
+
+                </ul>
+                <!-- END BREADCRUMB -->                
+                
+
+                <!-- PAGE CONTENT WRAPPER -->
+                <div class="page-content-wrap">                
+
+
+   <div class="col-md-8 col-md-offset-2">
+                    <h2 style="text-align: center;">
+                        Review Your Order & Complete Checkout
+                    </h2>
+
+                    <div class="shopping_cart">
+                        <form >
+                            <div class="panel-group" id="accordion">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Review
+                                                Your Order <b>(Transaction Reference:{{ data.transid }})</b></a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            <div class="items">
+                                                <div class="col-md-9">
+                                                    <table class="table table-striped">
+                                                        <tr>
+                                                            <td colspan="2">
+
+                                                                <b>
+                                                                    {{ data.description }}</b></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <ul>
+                                                                    <li> {{ data.description }}</li>
+
+                                                                </ul>
+                                                            </td>
+                                                            <td>
+                                                                <b>&#8358; {{ data.amount }}</b>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div style="text-align: center;">
+                                                        <h3>Order Total</h3>
+                                                        <h3><span style="color:green;">&#8358; {{ data.amount }}</span></h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+                                </div>
+                            </div>
+                            </form>
+
+
+
+                    </div>
+                </div>
+            <div class="col-md-8 col-md-offset-2">
+            <div id="kpay-pay-component"> {% if data.payment_gateway == "paystack" %} <button class="btn btn-success" id="paynow">Pay Now</button> {% endif %}</div>
+            </div>
+
+
+
+
+
+                
+                </div>
+                <!-- PAGE CONTENT WRAPPER -->                
+            </div>            
+            <!-- END PAGE CONTENT -->
+        </div>
+        <!-- END PAGE CONTAINER -->
+
+        <!-- MESSAGE BOX-->
+        <div class="message-box animated fadeIn" data-sound="alert" id="mb-signout">
+            <div class="mb-container">
+                <div class="mb-middle">
+                    <div class="mb-title"><span class="fa fa-sign-out"></span> Log <strong>Out</strong> ?</div>
+                    <div class="mb-content">
+                        <p>Are you sure you want to log out?</p>                    
+                        <p>Press No if youwant to continue work. Press Yes to logout current user.</p>
+                    </div>
+                    <div class="mb-footer">
+                        <div class="pull-right">
+                            <a href="logout" class="btn btn-success btn-lg">Yes</a>
+                            <button class="btn btn-default btn-lg mb-control-close">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MESSAGE BOX-->
+
+        <!-- START PRELOADS -->
+        <audio id="audio-alert" src="../static/audio/alert.mp3" preload="auto"></audio>
+        <audio id="audio-fail" src="../static/audio/fail.mp3" preload="auto"></audio>
+        <!-- END PRELOADS -->               
+
+   {% include "portal_scripts.html" %}
+<script src="../static/vendor/bootstrap-table/bootstrap-table.min.js"></script>
+  <script src="../static/vendor/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js"></script>
+    <script src="{% static "vendor/jquery/jquery.js" %}"></script>
+                 <form   autocomplete="off">
+        {% if data.payment_gateway == "kongapay" %}
+
+            {% if data.payment_type == "production" %}
+
+        <script src="https://www.kongapay.com/plugins/web-plugin/js/kpay.min.js"></script>
+        {% else %}
+        <script src="https://sandbox.kongapay.com/plugins/web-plugin/js/kpay-sand.min.js"></script>
+        {% endif %}
+
+ <script>
+    new KongaPay({
+        merchantId: "{{ data.merchantid }}",
+        merchantName: "{{ data.merchantname }}",
+        phone:"{{ data.phone }}", //optional
+        callBack: "{{ data.callbackurl }}",
+        amount: "{{ data.amount }}",
+        transactionReference: "{{ data.transid }}" ,
+        buttonSize: 140,
+        description : "{{ data.description }}", //optional
+    });
+</script>
+              {% endif %}
+
+            {% if data.payment_gateway == "paystack" %}
+            <script src="https://js.paystack.co/v1/inline.js"></script>
+            <!-- <script src="../static/js/paystack.js"></script>-->
+                <script>
+                var transactionid="{{ data.transactionid }}"
+                paystackHandler = PaystackPop.setup({
+          key: "{{ data.merchantid }}",
+          email: "{{ data.email }}",
+          amount: parseFloat({{ data.amount }}) * 100,
+          onClose: function () {
+           // payment_btn.attr('disabled', false).html('Make Payment');
+          },
+          callback: function (response) {
+              transid=response.trxref;
+              location.href="/portal/payment/completed?reference="+transid+"&transactionid="+transactionid;
+          }
+        })
+                $("#paynow").click(function(){
+                  paystackHandler.openIframe();
+                });
+
+                </script>
+              {% endif %}
+
+
+
+
+
+
+
+
+    </body>
+</html>
+
+
+
+
+
+

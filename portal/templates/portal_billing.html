@@ -1,0 +1,237 @@
+{%  load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>        
+        <!-- META SECTION -->
+        <title>{{ data.sitename }}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <!-- END META SECTION -->
+        
+        <!-- CSS INCLUDE -->        
+        <link rel="stylesheet" type="text/css" id="theme" href="../static/css/theme-default.css"/>
+         <link rel="stylesheet" type="text/css"  href="../static/js/themes/default/style.min.css"/>
+           <link rel="stylesheet" href="../static/vendor/bootstrap-table/bootstrap-table.css">
+        <link rel="stylesheet" href="{%  static "css/jstree.style.min.css"  %}"/>
+
+        <!-- EOF CSS INCLUDE -->                                      
+    </head>
+    <body>
+        <!-- START PAGE CONTAINER -->
+        <div class="page-container page-navigation-top">            
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+                
+                          {% include "portal_navbar.html" %}       
+                
+                <!-- START BREADCRUMB -->
+                <ul class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Billing</a></li>
+
+                </ul>
+                <!-- END BREADCRUMB -->                
+                
+
+                <!-- PAGE CONTENT WRAPPER -->
+                <div class="page-content-wrap">                
+
+
+                     <div class="row">
+                        <div class="col-md-12">
+
+                          <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Renew Subscription</h3>
+                                    <ul class="panel-controls">
+                                        <li><a href="#" class="panel-remove"><span class="fa fa-times"></span></a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="panel-body">
+                            <form method="post" action="/portal/payment" class="form-horizontal">
+                                <div class="col-md-12">
+                                <label class="control-label" for="title">Package</label>
+                                <select name="pinfo">
+                                    {%  for pinfo in data.paymentoptions  %}
+                                        <option value="{{ pinfo.id }}">{{ pinfo.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                </div>
+
+
+
+                                <div class="col-md-12">
+                                <label class="control-label" for="description">Description</label>
+                                <select name="duration">
+                                    {% for i in data.duration %}
+
+                                    <option value="{{ i }}">{{ i }} Months</option>
+
+                                    {% endfor %}
+                                </select>
+                                </div>
+
+
+
+
+
+
+
+                            <div class="col-md-11" style="margin-top:20px;">
+                                <button type="submit" class="btn btn-primary pull-left">Continue</button>
+                            </div>
+
+                                <input type="hidden"   id="id" name="id" value="{{ data.user.id }}" />
+                                {% csrf_token %}
+
+</form>
+</div>
+                          </div>
+                        </div>
+                    </div>
+
+                        <div class="row">
+                        <div class="col-md-12">
+                        <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">My Payments</h3>
+                                    <ul class="panel-controls">
+                                        <li><a href="#" class="panel-remove"><span class="fa fa-times"></span></a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="panel-body">
+
+                            <table   id="transactions"
+                                   data-toggle="table"
+                                   data-pagination="true"
+                                 data-side-pagination="server">
+                                <thead>
+                                <tr>
+                                    <th data-field="id">ID</th>
+                                    <th data-field="username">Username</th>
+                                    <th data-field="description" data-filter-control="input"> Description</th>
+                                    <th data-field="amount" data-filter-control="input"> Amount</th>
+                                    <th data-formatter="updateStatus"> Status</th>
+                                    <th data-field="paymentdate" data-filter-control="input"> Date</th>
+
+                                </tr>
+                                </thead>
+
+                            </table>
+                    </div>
+                            </div>
+           </div>
+            </div>
+
+
+
+
+
+
+                
+                </div>
+                <!-- PAGE CONTENT WRAPPER -->                
+            </div>            
+            <!-- END PAGE CONTENT -->
+        </div>
+        <!-- END PAGE CONTAINER -->
+
+        <!-- MESSAGE BOX-->
+        <div class="message-box animated fadeIn" data-sound="alert" id="mb-signout">
+            <div class="mb-container">
+                <div class="mb-middle">
+                    <div class="mb-title"><span class="fa fa-sign-out"></span> Log <strong>Out</strong> ?</div>
+                    <div class="mb-content">
+                        <p>Are you sure you want to log out?</p>                    
+                        <p>Press No if youwant to continue work. Press Yes to logout current user.</p>
+                    </div>
+                    <div class="mb-footer">
+                        <div class="pull-right">
+                            <a href="logout" class="btn btn-success btn-lg">Yes</a>
+                            <button class="btn btn-default btn-lg mb-control-close">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MESSAGE BOX-->
+
+        <!-- START PRELOADS -->
+        <audio id="audio-alert" src="../static/audio/alert.mp3" preload="auto"></audio>
+        <audio id="audio-fail" src="../static/audio/fail.mp3" preload="auto"></audio>
+        <!-- END PRELOADS -->               
+
+   {% include "portal_scripts.html" %}
+<script src="../static/vendor/bootstrap-table/bootstrap-table.min.js"></script>
+  <script src="../static/vendor/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js"></script>
+     <script>
+
+
+ var $table = $('#transactions');
+
+    $(function () {
+
+        //hide the advanced fields
+        $('.advanced').hide();
+
+         $('#advanced').click(function(){
+                if( $('#advanced').is(":checked")){
+                    $('.advanced').show();
+                }else{
+                    $('.advanced').hide();
+                }
+         });
+
+	var number=0;
+        $table.on('page-change.bs.table', function (e, number, size) {
+            getData(number, size);
+        });
+        var options = $table.bootstrapTable('getOptions');
+        getData(options.pageNumber, options.pageSize);
+    });
+    function getData(number, size) {
+	if(isNaN(number)){
+	number=1;
+	}
+        $.get('payment/list', {
+            offset: (number - 1) * size,
+            limit: size
+        }, function (res) {
+            //console.log(res)
+            $table.bootstrapTable('load', res);
+        });
+    }
+
+
+
+
+
+    function updateStatus(value, row){
+        if(row.status!="0"){
+        data='<span><i class="fa fa-times"><i></span>'
+        }else{
+        data='<span><i class="fa fa-check"><i></span>'
+        }
+	return data;
+	}
+    </script>
+
+
+
+
+
+
+
+    </body>
+</html>
+
+
+
+
+
+

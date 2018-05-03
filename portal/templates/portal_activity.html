@@ -1,0 +1,297 @@
+{%  load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>        
+        <!-- META SECTION -->
+        <title>{{ data.sitename }}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <!-- END META SECTION -->
+        
+        <!-- CSS INCLUDE -->        
+        <link rel="stylesheet" type="text/css" id="theme" href="../static/css/theme-default.css"/>
+         <link rel="stylesheet" type="text/css"  href="../static/js/themes/default/style.min.css"/>
+        <link rel="stylesheet" href="{%  static "css/jstree.style.min.css"  %}"/>
+         <style>
+  td {
+    padding: 8px 10px;
+  }
+
+  td:first-child {
+    font-family: monospace;
+  }
+
+  h3 {
+    margin-top: 100px;
+  }
+
+  h5 {
+    margin-bottom: 0;
+  }
+
+  hr {
+    margin-top: 2px;
+  }
+
+  .main {
+    height: 600px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+   background: #fff;
+      margin: 20px 20px 20px;
+
+  }
+
+  .example-2, .example-3, .example-4, .example-5, .example-6 {
+    height: 250px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .example-flex {
+    height: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .example-flex-reverse {
+    flex-direction: row-reverse;
+  }
+
+  #one, #two {
+    padding: 20px;
+  }
+
+  #one p {
+    padding: 0;
+  }
+
+  .example-4, .example-5 {
+    height: 400px;
+  }
+
+  .split p, .split-flex p {
+    padding: 20px;
+  }
+
+  .split, .split-flex {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .gutter {
+    background-color: #eee;
+
+    background-repeat: no-repeat;
+    background-position: 50%;
+  }
+
+  .gutter.gutter-horizontal {
+    background-image: url('../static/img/vertical.png');
+    cursor: ew-resize;
+  }
+
+  .gutter.gutter-vertical {
+    background-image: url('../static/img/horizontal.png');
+    cursor: ns-resize;
+  }
+
+  .split.split-horizontal, .gutter.gutter-horizontal {
+    height: 100%;
+    float: left;
+  }
+
+        </style>
+        <!-- EOF CSS INCLUDE -->                                      
+    </head>
+    <body>
+        <!-- START PAGE CONTAINER -->
+        <div class="page-container page-navigation-top">            
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+                
+                          {% include "portal_navbar.html" %}       
+                
+                <!-- START BREADCRUMB -->
+                <ul class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Laws</a></li>
+
+                </ul>
+                <!-- END BREADCRUMB -->                
+                
+
+                <!-- PAGE CONTENT WRAPPER -->
+                <div class="page-content-wrap">                
+
+                <div class="row main">
+
+
+                <div id="one" class="split split-horizontal">
+                    <h2>Kwara State Laws</h2>
+                <div id="laws">
+
+                </div>
+
+                </div>
+                <div id="two" class="split split-horizontal">
+                <h1 id="title" style="align:center">Documentation</h1>
+                <div id="body" style="align:center;font-size:15px;font-color:#000;"></div>
+                <div id="schedule"></div>
+                </div>
+
+                </div>
+
+
+                </div>
+
+
+
+
+                
+                </div>
+                <!-- PAGE CONTENT WRAPPER -->                
+            </div>            
+            <!-- END PAGE CONTENT -->
+        </div>
+        <!-- END PAGE CONTAINER -->
+
+        <!-- MESSAGE BOX-->
+        <div class="message-box animated fadeIn" data-sound="alert" id="mb-signout">
+            <div class="mb-container">
+                <div class="mb-middle">
+                    <div class="mb-title"><span class="fa fa-sign-out"></span> Log <strong>Out</strong> ?</div>
+                    <div class="mb-content">
+                        <p>Are you sure you want to log out?</p>                    
+                        <p>Press No if youwant to continue work. Press Yes to logout current user.</p>
+                    </div>
+                    <div class="mb-footer">
+                        <div class="pull-right">
+                            <a href="logout" class="btn btn-success btn-lg">Yes</a>
+                            <button class="btn btn-default btn-lg mb-control-close">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MESSAGE BOX-->
+
+        <!-- START PRELOADS -->
+        <audio id="audio-alert" src="../static/audio/alert.mp3" preload="auto"></audio>
+        <audio id="audio-fail" src="../static/audio/fail.mp3" preload="auto"></audio>
+        <!-- END PRELOADS -->               
+
+   {% include "portal_scripts.html" %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.2.0/split.min.js"></script>
+    <script>
+
+
+
+ function populateDocument(id){
+    $.ajax({type:"json",url: "lawsection/"+id, success: function(json){
+         id=json.body;
+        title=json.title;
+        body=json.body;
+         schedule=json.schedule;
+         postdate=json.postdate;
+        jQuery("#title").html(title)
+        jQuery("#body").html(body)
+        jQuery("#schedule").html(schedule)
+
+    }});
+}
+
+
+  function populateLawDocument(id){
+    $.ajax({type:"json",url: "lawdetail/"+id, success: function(json){
+         id=json.id;
+        title=json.title;
+        cover=json.cover;
+         //schedule=json.schedule;
+         //postdate=json.postdate;
+        jQuery("#title").html(title)
+        jQuery("#body").html(cover)
+        jQuery("#schedule").html(schedule)
+
+    }});
+}
+
+
+        jQuery(function(){
+
+
+
+
+               $('#laws').jstree({
+'core' : {
+    'data': {
+        'url': function (node) {
+
+            return node.id === '#' ?
+                    'section' :
+            'section/' + node.id;
+        },
+        'data': function (node) {
+
+            return {'id': node.id};
+        }
+    }
+}
+});
+
+$('.jstree-anchor').click(function(){
+console.log("Body clicked")
+})
+$('.jstree-icon').click(function(){
+console.log("Drop down clicked")
+})
+
+$('#laws').on("select_node.jstree", function (e, data) {
+    if(data.node.parent=="#"){
+        populateLawDocument(data.node.id.replace("id",""))
+    }
+    else{
+      populateDocument(data.node.id.replace("id",""))
+    }
+
+//
+   });
+
+
+
+
+                    try{
+                        Split(['#one', '#two'], {
+                            sizes: [25, 75],
+                            minSize: 200
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+
+             });
+    </script>
+
+
+
+
+
+
+
+    </body>
+</html>
+
+
+
+
+
+
